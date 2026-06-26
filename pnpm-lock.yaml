@@ -26,6 +26,9 @@ importers:
       pg:
         specifier: 8.20.0
         version: 8.20.0
+      pg-escape:
+        specifier: ^0.2.0
+        version: 0.2.0
       redis:
         specifier: 5.12.1
         version: 5.12.1
@@ -57,6 +60,9 @@ importers:
       '@types/pg':
         specifier: 8.20.0
         version: 8.20.0
+      '@types/pg-escape':
+        specifier: ^0.2.3
+        version: 0.2.3
       '@typescript-eslint/eslint-plugin':
         specifier: 8.59.0
         version: 8.59.0(@typescript-eslint/parser@8.59.0(eslint@10.2.1)(typescript@6.0.3))(eslint@10.2.1)(typescript@6.0.3)
@@ -581,6 +587,9 @@ packages:
 
   '@types/node@24.3.1':
     resolution: {integrity: sha512-3vXmQDXy+woz+gnrTvuvNrPzekOi+Ds0ReMxw0LzBiK3a+1k0kQn9f2NWk+lgD4rJehFUmYy2gMhJ2ZI+7YP9g==}
+
+  '@types/pg-escape@0.2.3':
+    resolution: {integrity: sha512-pH5acHzd/Vg4dcHBBZDMUj92vsom8Cy5tCpZ4yfsM6C1bObUZTl8NbSI99gJpovpJ0l+r56q/v2OcdZLhKl2GA==}
 
   '@types/pg@8.20.0':
     resolution: {integrity: sha512-bEPFOaMAHTEP1EzpvHTbmwR8UsFyHSKsRisLIHVMXnpNefSbGA1bD6CVy+qKjGSqmZqNqBDV2azOBo8TgkcVow==}
@@ -1594,6 +1603,9 @@ packages:
   pg-connection-string@2.14.0:
     resolution: {integrity: sha512-XwWDGcLRGCXAR8F/AM5bG7Q+A3Wm2s6QeEjlOKZLlH3UYcguiqCWKyWXVag5TLTIjR7oOJUY8kcADaZgWPyLeg==}
 
+  pg-escape@0.2.0:
+    resolution: {integrity: sha512-QfXcpxyN9vT+kvexQpTeNyiwCxs4LPXLAV/C0EeLTJPCF61swhGdDlnHcuDgxJudgKGfQYiCkegg0GsSKSvvEg==}
+
   pg-int8@1.0.1:
     resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
     engines: {node: '>=4.0.0'}
@@ -2423,6 +2435,8 @@ snapshots:
   '@types/node@24.3.1':
     dependencies:
       undici-types: 7.10.0
+
+  '@types/pg-escape@0.2.3': {}
 
   '@types/pg@8.20.0':
     dependencies:
@@ -3606,6 +3620,8 @@ snapshots:
     optional: true
 
   pg-connection-string@2.14.0: {}
+
+  pg-escape@0.2.0: {}
 
   pg-int8@1.0.1: {}
 

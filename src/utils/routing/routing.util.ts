@@ -3,10 +3,11 @@ import { createRoute } from '@hono/zod-openapi';
 type Version = 'v1';
 type Client = 'platform';
 type Resource = 'auth' | 'users';
-type Action = 'me' | 'test-token';
+type Param = `{${string}}`;
 
 type Path =
-  | `/${Client}/${Version}/${Resource}/${Action}`;
+  | `/${Client}/${Version}/${Resource}`
+  | `/${Client}/${Version}/${Resource}/${Param}`;
 
 const path = <T extends Path>(value: T): T => value;
 

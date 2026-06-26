@@ -4,14 +4,16 @@ import { PlatformContext } from '@self/contexts';
 import { routing } from '@self/utils';
 import { validation } from '@self/validation';
 
-const routePath = routing().path('/platform/v1/users/me');
-
-app.use(routePath, PlatformContext.middleware());
-
 const handler = app.openapi(routing().route({
   description: 'Retrieves the authenticated platform user.',
   method: 'get',
-  path: routePath,
+  middleware: PlatformContext.middleware(),
+  path: routing().path('/platform/v1/users/{id}'),
+  request: {
+    params: validation().object({
+      id: validation().literal('me'),
+    }),
+  },
   responses: {
     200: {
       content: {
@@ -57,7 +59,11 @@ const handler = app.openapi(routing().route({
   },
   tags: ['Users'],
 }), async c => {
-  const result = await retrieveCurrentUsersApplication();
+
+  const user = PlatformContext.getUser();
+  const result = await retrieveCurrentUsersApplication({
+    id: user.id,
+  });
 
   return c.json(result, 200);
 });

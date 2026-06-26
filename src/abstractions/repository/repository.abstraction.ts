@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
   connection,
   DataBaseSchema,
@@ -8,12 +10,13 @@ import {
   Transaction,
   Updateable,
 } from 'kysely';
-import { z } from 'zod';
+import pgEscape from 'pg-escape';
+import z from 'zod';
 
 export type QueryOptions = {
+  transaction?: Transaction<DataBaseSchema>;
   forceWriteConnection?: boolean;
   includeRemoved?: boolean;
-  transaction?: Transaction<DataBaseSchema>;
 };
 
 export abstract class Repository<T extends keyof DataBaseSchema> {
@@ -25,57 +28,87 @@ export abstract class Repository<T extends keyof DataBaseSchema> {
     this.table = params.table;
   }
 
-  public insert(toSet: Insertable<DataBaseSchema[T]> | Array<Insertable<DataBaseSchema[T]>>, options: QueryOptions = {}) {
-    return (options.transaction || connection).insertInto(this.table).values(toSet);
+  public insert(
+    toSet: Insertable<DataBaseSchema[T]> | Array<Insertable<DataBaseSchema[T]>>,
+    options: QueryOptions = {},
+  ) {
+    const query = (options.transaction || connection).insertInto<T>(this.table).values(toSet);
+    return query;
   }
 
   public update(toSet: Updateable<DataBaseSchema[T]>, options: QueryOptions = {}) {
     const query = (options.transaction || connection).updateTable(this.table);
-    // @ts-expect-error Kysely cannot keep generic table update signatures compatible across table unions.
-    return query.set(toSet);
+    const set = (query as any).set(toSet); // Sad but had to.
+    return set as typeof query;
   }
 
   public select(options: QueryOptions = {}) {
-    if(options.transaction) return options.transaction.selectFrom(this.table);
-    if(options.forceWriteConnection) return connection.selectFrom(this.table);
+    if(options.transaction) {
+      return options.transaction.selectFrom(this.table);
+    }
+
+    if(options.forceWriteConnection) {
+      return connection.selectFrom(this.table);
+    }
+
     return getReadConnection().selectFrom(this.table);
   }
 
   public delete(options: QueryOptions = {}) {
-    return (options.transaction || connection).deleteFrom(this.table);
+    const query = (options.transaction || connection).deleteFrom(this.table);
+    return query;
   }
 
   public selectById(id: string, options: QueryOptions = {}) {
-    const conn = options.transaction
-      || (options.forceWriteConnection ? connection : getReadConnection());
+    let conn: Transaction<DataBaseSchema> | typeof connection;
+
+    if(options.transaction) {
+      conn = options.transaction;
+    } else if(options.forceWriteConnection) {
+      conn = connection;
+    } else {
+      conn = getReadConnection();
+    }
 
     const query = conn.selectFrom(this.table);
-    // @ts-expect-error Kysely cannot infer generic table columns from the shared EntityTable contract.
-    return query.where(`${String(this.table)}.id`, '=', id);
+    const select = (query as any).where(`${this.table}.id`, '=', id);
+    return select as typeof query;
   }
 
-  public jsonUpdateValidation<TSchema extends z.ZodType>(params: {
-    schema: TSchema;
-    value?: z.infer<TSchema>;
+  public jsonUpdateValidation<T extends z.ZodType, TValue extends z.infer<T>>(params: {
+    value?: TValue;
+    schema: T;
   }) {
-    if(params.value === undefined) return params.value;
-    return this.jsonValidation({
+    if(!params.value) {
+      return params.value;
+    }
+
+    const validated = this.jsonValidation<T>({
       schema: params.schema,
       value: params.value,
     });
+    return validated;
   }
 
-  public jsonInsertValidation<TSchema extends z.ZodType>(params: {
-    schema: TSchema;
-    value: z.infer<TSchema>;
+  public jsonInsertValidation<T extends z.ZodType>(params: {
+    value: object | Array<object> | null | undefined;
+    schema: T;
   }) {
-    return this.jsonValidation(params);
+    const validated = this.jsonValidation<T>(params);
+    return validated;
   }
 
-  private jsonValidation<TSchema extends z.ZodType>(params: {
-    schema: TSchema;
-    value: z.infer<TSchema>;
-  }) {
-    return params.schema.parse(params.value);
+  public escape(value: string): string {
+    const result = pgEscape.string(value);
+    return result;
   }
+
+  private jsonValidation<T extends z.ZodType>(params: {
+    value: object | Array<object> | null | undefined;
+    schema: T;
+  }) {
+    const validated = params.schema.parse(params.value);
+    return validated;
+  }
+
 }
