@@ -42,6 +42,8 @@ class LoggingContext extends Context<Properties> {
       }
 
       const headers = this.redactHeaders(c.req.header());
+      const redactedBody = this.redactObject(body);
+      const redactedQuery = this.redactObject(c.req.query());
       const ip = headers['cf-connecting-ip']
         || headers['x-forwarded-for']?.split(',')[0]?.trim()
         || headers['fly-client-ip']
@@ -55,11 +57,11 @@ class LoggingContext extends Context<Properties> {
           ...(c.error ? {
             error: data().stringifyError(c.error),
           } : {}),
-          body,
+          body: redactedBody,
           headers,
           ip,
-          query: c.req.query(),
-          rawBody: rawBody ? rawBody.substring(0, 1000) : undefined,
+          query: redactedQuery,
+          rawBody: rawBody ? '[REDACTED]' : undefined,
           status: c.res.status,
         },
       });
@@ -75,6 +77,21 @@ class LoggingContext extends Context<Properties> {
       const lower = key.toLowerCase();
       if(lower === 'authorization' || lower.includes('token')) {
         redacted[key] = 'REDACTED';
+      }
+    }
+
+    return redacted;
+  }
+
+  private redactObject<T extends Record<string, unknown>>(object: T): T {
+    const redacted = {
+      ...object,
+    };
+
+    for(const key of Object.keys(redacted)) {
+      const lower = key.toLowerCase();
+      if(lower === 'authorization' || lower.includes('token')) {
+        redacted[key as keyof T] = 'REDACTED' as T[keyof T];
       }
     }
 

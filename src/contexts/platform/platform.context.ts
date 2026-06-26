@@ -24,6 +24,7 @@ type Properties = {
 };
 
 const ttlSeconds = env.NODE_ENV === 'local' ? 1 : 3600;
+const accessTokenTtlMs = 1000 * 60 * 60 * 24 * 30;
 
 class PlatformContext extends HttpClientContext<Properties> {
   public getUser() {
@@ -70,6 +71,17 @@ class PlatformContext extends HttpClientContext<Properties> {
             ptBr: 'O token de autenticação é inválido.',
           },
           message: 'Invalid token.',
+        });
+      }
+
+      if(decrypted.createdAt < new Date(Date.now() - accessTokenTtlMs)) {
+        throw new UnauthorizedException({
+          feedback: {
+            enUs: 'The authentication token has expired.',
+            esEs: 'El token de autenticación ha expirado.',
+            ptBr: 'O token de autenticação expirou.',
+          },
+          message: 'The token has expired.',
         });
       }
 

@@ -4,10 +4,12 @@ type Version = 'v1';
 type Client = 'platform';
 type Resource = 'auth' | 'users';
 type Param = `{${string}}`;
+type Action = string;
 
 type Path =
   | `/${Client}/${Version}/${Resource}`
-  | `/${Client}/${Version}/${Resource}/${Param}`;
+  | `/${Client}/${Version}/${Resource}/${Param}`
+  | `/${Client}/${Version}/${Resource}/${Action}`;
 
 const path = <T extends Path>(value: T): T => value;
 

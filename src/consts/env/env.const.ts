@@ -8,11 +8,13 @@ export const env = z.object({
   HTTP_PORT: z.string().refine(value => Number.parseInt(value, 10) > 0, {
     message: 'HTTP_PORT must be a positive integer.',
   }),
+  MAILGUN_API_TOKEN: z.string(),
   NODE_ENV: z.enum([
     'local',
     'development',
     'production',
   ]),
+  PLATFORM_URL: z.url(),
   REDIS_DATABASE: z.string().refine(value => Number.parseInt(value, 10) >= 0, {
     message: 'REDIS_DATABASE must be zero or a positive integer.',
   }).transform(value => Number.parseInt(value, 10)),

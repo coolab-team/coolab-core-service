@@ -7,11 +7,21 @@ type AccessTokenContent = {
   id: string;
 };
 
+type AuthenticationTokenContent = {
+  email: string;
+  id: string;
+};
+
 class PlatformEncryption extends Encryption {
   private accessTokenSchema = this.validator().object({
     email: this.validator().email(),
     id: this.validator().id(),
   }) satisfies z.ZodType<AccessTokenContent>;
+
+  private authenticationTokenSchema = this.validator().object({
+    email: this.validator().email(),
+    id: this.validator().id(),
+  }) satisfies z.ZodType<AuthenticationTokenContent>;
 
   constructor() {
     super(env.AUTH_ENCRYPTION_PRIVATE_KEY);
@@ -21,9 +31,18 @@ class PlatformEncryption extends Encryption {
     return this.encrypt(content);
   }
 
+  public encryptAuthenticationToken(content: AuthenticationTokenContent) {
+    return this.encrypt(content);
+  }
+
   public decryptAccessToken(content: string) {
     const decrypted = this.decrypt(content);
     return this.createSchema(this.accessTokenSchema).parse(decrypted);
+  }
+
+  public decryptAuthenticationToken(content: string) {
+    const decrypted = this.decrypt(content);
+    return this.createSchema(this.authenticationTokenSchema).parse(decrypted);
   }
 }
 
