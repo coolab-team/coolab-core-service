@@ -32,6 +32,7 @@ const updatable = () => helpers().table().updatable(selectable())
     email: true,
     emailStatus: true,
     lastAuthenticationAt: true,
+    picture: true,
   })
   .partial();
 

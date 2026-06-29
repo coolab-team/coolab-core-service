@@ -1,23 +1,17 @@
 import { NotFoundException } from '@self/exceptions';
 import { MemoizationMemory } from '@self/memories';
 import { UsersRepository } from '@self/repositories';
-import { validation } from '@self/validation';
-import { z } from 'zod';
 
-const updatableUser = validation().helpers().ensureField(
-  validation().tables().users().updatable(),
-);
-
-type Params = z.infer<typeof updatableUser> & {
+type Params = {
   id: string;
+  name?: string | null;
 };
 
 export const updateUsersApplication = async (params: Params) => {
 
   const { id, ...toUpdate } = params;
-  const parsed = updatableUser.parse(toUpdate);
 
-  const user = await UsersRepository.update(parsed)
+  const user = await UsersRepository.update(toUpdate)
     .where('id', '=', id)
     .returningAll()
     .executeTakeFirst();

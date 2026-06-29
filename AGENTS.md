@@ -8,6 +8,7 @@
 - Use singleton exports for repositories, contexts, encryptions, and utilities.
 - Keep database migrations as raw SQL under `src/database/migrations`.
 - Every table type must have matching Zod validation schemas.
+- Perform validation in handler layers; never call validation schemas in application layers.
 - Never log bearer tokens or encrypted token content.
 
 ## Commands
