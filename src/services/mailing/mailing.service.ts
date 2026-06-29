@@ -1,4 +1,3 @@
-import { env } from '@self/consts';
 import { PlatformEncryption } from '@self/encryptions';
 import { MailgunSource } from '@self/sources';
 
@@ -6,16 +5,19 @@ type SendPlatformUserAuthenticationLinkParams = {
   destination: string;
   email: string;
   id: string;
+  origin: string;
 };
 
 class MailingService {
-  private readonly domain = 'coolab.ai';
-  private readonly from = 'Coolab <noreply@coolab.ai>';
+  private readonly domain = 'sandboxfe7601ddbd4b4daaa2a079593669c62d.mailgun.org';
+
+  private readonly from = 'Mailgun Sandbox <postmaster@sandboxfe7601ddbd4b4daaa2a079593669c62d.mailgun.org>';
 
   public async sendPlatformUserAuthenticationLink(params: SendPlatformUserAuthenticationLinkParams) {
     const link = this.buildPlatformUserAuthenticationLink({
       email: params.email,
       id: params.id,
+      origin: params.origin,
     });
 
     await MailgunSource.client.messages.create(this.domain, {
@@ -39,12 +41,13 @@ class MailingService {
   private buildPlatformUserAuthenticationLink(params: {
     email: string;
     id: string;
+    origin: string;
   }) {
     const authenticationToken = PlatformEncryption.encryptAuthenticationToken({
       email: params.email,
       id: params.id,
     });
-    const url = new URL('/authenticate', env.PLATFORM_URL);
+    const url = new URL('/authenticate', params.origin);
     url.searchParams.set('token', authenticationToken);
 
     return url.toString();

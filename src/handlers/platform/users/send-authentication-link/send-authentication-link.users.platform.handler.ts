@@ -17,6 +17,9 @@ const handler = app.openapi(routing().route({
         },
       },
     },
+    headers: validation().object({
+      'x-origin': validation().url(),
+    }),
   },
   responses: {
     200: {
@@ -24,13 +27,13 @@ const handler = app.openapi(routing().route({
         'application/json': {
           schema: validation().union([
             validation().object({
-              accessToken: validation().string(),
+              authenticationToken: validation().string(),
             }),
             validation().empty(),
           ]),
         },
       },
-      description: 'The authentication link was sent to the user or a new user access token was generated.',
+      description: 'The authentication link was sent to the user or a new user authentication token was generated.',
     },
     400: {
       content: {
@@ -53,19 +56,21 @@ const handler = app.openapi(routing().route({
 }), async c => {
 
   const body = c.req.valid('json');
+  const headers = c.req.valid('header');
 
   const result = await sendAuthenticationLinkUsersApplication({
     email: body.email,
+    origin: headers['x-origin'],
   });
 
-  if(result.accessToken) {
+  if(result && 'authenticationToken' in result) {
     return c.json({
-      accessToken: result.accessToken,
+      authenticationToken: result.authenticationToken,
     }, 200);
   }
 
   return c.json({
-    message: result.message ?? 'That worked!',
+    message: 'That worked!',
   }, 200);
 });
 
