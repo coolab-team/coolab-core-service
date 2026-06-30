@@ -67,7 +67,8 @@ const handler = app.openapi(RoutingUtil.route({
     userId: user.id,
   });
 
-  return c.json(result, 201);
+  const response = c.json(result, 201);
+  return response;
 });
 
 export { handler as createWorkspacesPlatformHandler };

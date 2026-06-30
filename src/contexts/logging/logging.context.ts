@@ -6,10 +6,11 @@ type Properties = object;
 
 class LoggingContext extends Context<Properties> {
   public async run<T>(params: { traceId?: string; }, callback: () => Promise<T>) {
-    return this.init({
+    const result = await this.init({
       properties: {},
       traceId: params.traceId,
     }, callback);
+    return result;
   }
 
   public middleware(): MiddlewareHandler {

@@ -12,7 +12,8 @@ class MemoizationMemory extends Memory {
 
     if(cachedResult) {
       const parsed = JSON.parse(cachedResult) as TReturn;
-      return AutoparserUtil.dates(parsed);
+      const mapped = AutoparserUtil.dates(parsed);
+      return mapped;
     }
 
     const result = await params.callback();
@@ -38,7 +39,8 @@ class MemoizationMemory extends Memory {
   }
 
   public purge(key: MemoryKey) {
-    return this.delete(key);
+    const result = this.delete(key);
+    return result;
   }
 
   public async purgeAll() {

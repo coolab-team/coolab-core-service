@@ -27,14 +27,13 @@ class FlyTigrisSource {
     this.client = new S3Client();
   }
 
-  public async upload(buffer: Buffer, path: Path, acl?: 'public-read') {
+  public async upload(buffer: Buffer, path: Path) {
     const fileStream = Readable.from(buffer);
 
     try {
       const upload = new Upload({
         client: this.client,
         params: {
-          ACL: acl,
           Body: fileStream,
           Bucket: this.bucket,
           ContentType: 'image/png',
@@ -42,7 +41,8 @@ class FlyTigrisSource {
         },
       });
 
-      return upload.done();
+      const result = await upload.done();
+      return result;
     } catch (error) {
       fileStream.destroy();
       throw error;
@@ -75,9 +75,10 @@ class FlyTigrisSource {
       Key: path,
     });
 
-    return getSignedUrl(this.client, command, {
+    const url = await getSignedUrl(this.client, command, {
       expiresIn: signedUrlExpiresIn,
     });
+    return url;
   }
 }
 

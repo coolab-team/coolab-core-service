@@ -13,11 +13,13 @@ class WorkspacesService {
 
   public uploadPictureBase64(base64: string) {
     const buffer = Buffer.from(base64.replace(picturePrefix, ''), 'base64');
-    return this.uploadPicture(buffer);
+    const result = this.uploadPicture(buffer);
+    return result;
   }
 
   public deletePicture(path: string) {
-    return FlyTigrisSource.delete(path);
+    const result = FlyTigrisSource.delete(path);
+    return result;
   }
 
   public async ensurePictureUrl<T extends { picture: string | null }>(workspace: T) {
@@ -28,6 +30,11 @@ class WorkspacesService {
         : null,
     };
 
+    return mapped;
+  }
+
+  public ensurePicturesUrl<T extends { picture: string | null }>(workspaces: Array<T>) {
+    const mapped = Promise.all(workspaces.map(workspace => this.ensurePictureUrl(workspace)));
     return mapped;
   }
 }

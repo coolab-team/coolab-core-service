@@ -64,14 +64,16 @@ const handler = app.openapi(RoutingUtil.route({
   });
 
   if(result && 'authenticationToken' in result) {
-    return c.json({
+    const response = c.json({
       authenticationToken: result.authenticationToken,
     }, 200);
+    return response;
   }
 
-  return c.json({
+  const response = c.json({
     message: 'That worked!',
   }, 200);
+  return response;
 });
 
 export { handler as sendAuthenticationLinkUsersPlatformHandler };

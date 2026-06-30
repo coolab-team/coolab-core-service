@@ -23,9 +23,10 @@ export abstract class Encryption {
   }
 
   protected createSchema<T extends object>(schema: z.ZodType<T>) {
-    return this.baseContentSchema.extend({
+    const contentSchema = this.baseContentSchema.extend({
       content: schema,
     });
+    return contentSchema;
   }
 
   protected decrypt(content: string) {
@@ -52,11 +53,13 @@ export abstract class Encryption {
     }), 'utf8', 'hex');
     encrypted += cipher.final('hex');
 
-    return Buffer.from(iv).toString('hex') + encrypted;
+    const serialized = Buffer.from(iv).toString('hex') + encrypted;
+    return serialized;
   }
 
   private buildKey(privateKey: string) {
     const key = crypto.pbkdf2Sync(privateKey, '', 100000, 32, 'sha256');
-    return Uint8Array.from(key);
+    const mapped = Uint8Array.from(key);
+    return mapped;
   }
 }

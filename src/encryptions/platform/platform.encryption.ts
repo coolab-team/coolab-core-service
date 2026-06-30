@@ -28,21 +28,25 @@ class PlatformEncryption extends Encryption {
   }
 
   public encryptAccessToken(content: AccessTokenContent) {
-    return this.encrypt(content);
+    const encrypted = this.encrypt(content);
+    return encrypted;
   }
 
   public encryptAuthenticationToken(content: AuthenticationTokenContent) {
-    return this.encrypt(content);
+    const encrypted = this.encrypt(content);
+    return encrypted;
   }
 
   public decryptAccessToken(content: string) {
     const decrypted = this.decrypt(content);
-    return this.createSchema(this.accessTokenSchema).parse(decrypted);
+    const parsed = this.createSchema(this.accessTokenSchema).parse(decrypted);
+    return parsed;
   }
 
   public decryptAuthenticationToken(content: string) {
     const decrypted = this.decrypt(content);
-    return this.createSchema(this.authenticationTokenSchema).parse(decrypted);
+    const parsed = this.createSchema(this.authenticationTokenSchema).parse(decrypted);
+    return parsed;
   }
 }
 

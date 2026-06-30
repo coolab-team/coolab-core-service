@@ -37,22 +37,25 @@ export abstract class Memory {
 
   protected async set(key: MemoryKey, value: string, ttlSeconds = 300) {
     await this.ensureConnection();
-    return this.client.set(this.getKey(key), value, {
+    const result = await this.client.set(this.getKey(key), value, {
       expiration: {
         type: 'EX',
         value: ttlSeconds,
       },
     });
+    return result;
   }
 
   protected async get(key: MemoryKey) {
     await this.ensureConnection();
-    return this.client.get(this.getKey(key));
+    const result = await this.client.get(this.getKey(key));
+    return result;
   }
 
   protected async delete(key: MemoryKey) {
     await this.ensureConnection();
-    return this.client.del(this.getKey(key));
+    const result = await this.client.del(this.getKey(key));
+    return result;
   }
 
   protected async getKeys(key: MemoryKey): Promise<Array<MemoryKey>> {

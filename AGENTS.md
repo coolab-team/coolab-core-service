@@ -10,6 +10,8 @@
 - Keep database migrations as raw SQL under `src/database/migrations`.
 - Every table type must have matching Zod validation schemas.
 - Perform validation in handler layers; never call validation schemas in application layers.
+- Define handler schemas inline inside the handler route config; never define handler schemas in variables before the handler.
+- Never return method or function call results directly; assign the value to a variable and then return the variable.
 - Call memoization memory directly at the layer that owns the cached workflow; do not add service methods that only proxy memoization calls.
 - Never log bearer tokens or encrypted token content.
 

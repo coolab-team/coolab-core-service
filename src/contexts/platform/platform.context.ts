@@ -110,9 +110,10 @@ class PlatformContext extends HttpClientContext<Properties> {
 
       const user = await MemoizationMemory.memo({
         callback: async () => {
-          return UsersRepository.selectById(decrypted.content.id)
+          const result = await UsersRepository.selectById(decrypted.content.id)
             .selectAll()
             .executeTakeFirst();
+          return result;
         },
         key: `memo:user-in-platform-context:${decrypted.content.id}`,
         ttlSeconds,
@@ -180,13 +181,14 @@ class PlatformContext extends HttpClientContext<Properties> {
 
         const workspace = await MemoizationMemory.memo({
           callback: async () => {
-            return WorkspacesRepository.select()
+            const result = await WorkspacesRepository.select()
               .innerJoin('workspaceUsers', 'workspaces.id', 'workspaceUsers.workspaceId')
               .where('workspaceUsers.userId', '=', userId)
               .where('workspaceUsers.workspaceId', '=', workspaceId)
               .selectAll('workspaces')
               .select('workspaceUsers.role as role')
               .executeTakeFirst();
+            return result;
           },
           key: `memo:user-workspace-in-platform-context:${userId}:${workspaceId}`,
           ttlSeconds,
@@ -214,7 +216,7 @@ class PlatformContext extends HttpClientContext<Properties> {
         });
       }
 
-      return this.init({
+      const result = await this.init({
         properties: {
           ...baseProperties,
           user: mappedUser,
@@ -222,6 +224,7 @@ class PlatformContext extends HttpClientContext<Properties> {
         },
         traceId: LoggingContext.get().traceId,
       }, next);
+      return result;
     };
   }
 }

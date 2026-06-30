@@ -22,7 +22,8 @@ class RoutingUtil {
       config.request.body.required = true;
     }
 
-    return createRoute(config);
+    const route = createRoute(config);
+    return route;
   };
 }
 

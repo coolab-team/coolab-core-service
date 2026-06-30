@@ -8,19 +8,21 @@ class UsersRepository extends Repository<'users'> {
   }
 
   public selectByEmail(email: string, options?: QueryOptions) {
-    return this.select(options)
+    const query = this.select(options)
       .selectAll()
       .where('users.email', '=', email);
+    return query;
   }
 
   public touchLastAuthenticationAt(params: {
     id: string;
     lastAuthenticationAt: Date;
   }, options?: QueryOptions) {
-    return this.update({
+    const query = this.update({
       lastAuthenticationAt: params.lastAuthenticationAt,
     }, options)
       .where('users.id', '=', params.id);
+    return query;
   }
 }
 

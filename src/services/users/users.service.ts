@@ -18,7 +18,8 @@ class UsersService {
   }
 
   public deletePicture(path: string) {
-    return FlyTigrisSource.delete(path);
+    const result = FlyTigrisSource.delete(path);
+    return result;
   }
 
   public async ensurePictureUrl<T extends { picture: string | null }>(user: T) {

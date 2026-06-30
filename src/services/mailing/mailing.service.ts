@@ -50,7 +50,8 @@ class MailingService {
     const url = new URL('/authenticate', params.origin);
     url.searchParams.set('token', authenticationToken);
 
-    return url.toString();
+    const stringUrl = url.toString();
+    return stringUrl;
   }
 
   private escapeHtml(value: string) {

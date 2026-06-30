@@ -30,11 +30,12 @@ const handler = new OpenAPIHono({
       message: z.prettifyError(result.error),
     });
 
-    return c.json({
+    const response = c.json({
       ...error.toHandlerResponse(),
       detail: z.treeifyError(result.error),
       traceId,
     } satisfies ExceptionWithTraceId, error.status);
+    return response;
   },
 });
 
@@ -42,14 +43,15 @@ handler.onError((error, c) => {
   const traceId = LoggingContext.get().traceId;
 
   if(error instanceof Exception) {
-    return c.json({
+    const response = c.json({
       ...error.toHandlerResponse(),
       traceId,
     }, error.status);
+    return response;
   }
 
   if(error instanceof HonoHTTPException && error.status === 400) {
-    return c.json({
+    const response = c.json({
       feedback: {
         enUs: 'The provided request data is invalid.',
         esEs: 'Los datos de la solicitud proporcionados no son válidos.',
@@ -59,9 +61,10 @@ handler.onError((error, c) => {
       name: 'BadRequestException',
       traceId,
     }, error.status);
+    return response;
   }
 
-  return c.json({
+  const response = c.json({
     feedback: {
       enUs: 'An unexpected error occurred. Please try again later.',
       esEs: 'Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.',
@@ -71,6 +74,7 @@ handler.onError((error, c) => {
     name: error.name,
     traceId,
   }, 500);
+  return response;
 });
 
 handler.use(contextStorage());
@@ -89,10 +93,11 @@ handler.use('*', bodyLimit({
       message: 'Request body exceeds maximum allowed size.',
     });
 
-    return c.json({
+    const response = c.json({
       ...error.toHandlerResponse(),
       traceId,
     }, error.status);
+    return response;
   },
 }));
 handler.use(LoggingContext.logger());
@@ -106,15 +111,17 @@ handler.use('*', async (c, next) => {
 });
 
 handler.get('/', c => {
-  return c.json({
+  const response = c.json({
     message: 'Coolab Core Service',
   }, 200);
+  return response;
 });
 
 handler.get('/health', c => {
-  return c.json({
+  const response = c.json({
     message: 'I\'m alive!',
   }, 200);
+  return response;
 });
 
 if(env.NODE_ENV !== 'production') {
@@ -131,7 +138,8 @@ if(env.NODE_ENV !== 'production') {
       Object.entries(doc.paths ?? {}).filter(([routePath]) => routePath.startsWith('/platform')),
     );
 
-    return c.json(doc);
+    const response = c.json(doc);
+    return response;
   });
 
   handler.get('/swagger/platform', swaggerUI({

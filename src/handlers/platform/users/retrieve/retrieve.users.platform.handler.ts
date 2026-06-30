@@ -65,7 +65,8 @@ const handler = app.openapi(RoutingUtil.route({
     id: user.id,
   });
 
-  return c.json(result, 200);
+  const response = c.json(result, 200);
+  return response;
 });
 
 export { handler as retrieveUsersPlatformHandler };

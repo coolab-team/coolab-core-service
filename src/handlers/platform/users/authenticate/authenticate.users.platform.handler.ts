@@ -57,7 +57,8 @@ const handler = app.openapi(RoutingUtil.route({
     token,
   });
 
-  return c.json(result, 200);
+  const response = c.json(result, 200);
+  return response;
 });
 
 export { handler as authenticateUsersPlatformHandler };

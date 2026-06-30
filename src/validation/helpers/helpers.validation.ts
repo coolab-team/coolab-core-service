@@ -25,10 +25,12 @@ type ToExcludeNonRemovable = ToExclude & {
 };
 
 const ensureField = <T extends z.ZodRawShape>(schema: z.ZodObject<T>) => {
-  return schema.refine(value => {
+  const refined = schema.refine(value => {
     const values = Object.values(value);
-    return values.some(item => item !== undefined);
+    const result = values.some(item => item !== undefined);
+    return result;
   }, 'At least one field must be defined.');
+  return refined;
 };
 
 const entity = () => z.object({

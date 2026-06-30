@@ -44,14 +44,17 @@ export abstract class Repository<T extends keyof DataBaseSchema> {
 
   public select(options: QueryOptions = {}) {
     if(options.transaction) {
-      return options.transaction.selectFrom(this.table);
+      const query = options.transaction.selectFrom(this.table);
+      return query;
     }
 
     if(options.forceWriteConnection) {
-      return connection.selectFrom(this.table);
+      const query = connection.selectFrom(this.table);
+      return query;
     }
 
-    return getReadConnection().selectFrom(this.table);
+    const query = getReadConnection().selectFrom(this.table);
+    return query;
   }
 
   public delete(options: QueryOptions = {}) {

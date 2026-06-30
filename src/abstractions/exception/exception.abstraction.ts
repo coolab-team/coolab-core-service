@@ -50,11 +50,13 @@ export abstract class Exception extends Error {
   }
 
   public toJson() {
-    return serializeError(this);
+    const serialized = serializeError(this);
+    return serialized;
   }
 
   public toString() {
-    return JSON.stringify(this.toJson());
+    const serialized = JSON.stringify(this.toJson());
+    return serialized;
   }
 
   public toHandlerResponse(): z.infer<ReturnType<ReturnType<typeof validation>['exception']>> {

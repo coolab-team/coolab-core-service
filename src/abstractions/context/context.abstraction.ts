@@ -22,11 +22,12 @@ export abstract class Context<TProperties> {
   }
 
   protected init<T>(params: InitParams<TProperties>, callback: () => Promise<T>) {
-    return this.manager.run({
+    const result = this.manager.run({
       properties: params.properties,
       start: new Date(),
       traceId: params.traceId ?? RandomizeUtil.uuid(),
     }, callback);
+    return result;
   }
 
   public get() {
