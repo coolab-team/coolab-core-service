@@ -1,19 +1,27 @@
 import { z } from 'zod';
 
-export const picture = () => z.any()
+const prefix = 'data:image/png;base64,';
+
+export const picture = () => z.string()
   .refine(value => {
-    return value instanceof File;
-  }, 'Picture must be a file.')
+    const isPng = value.startsWith(prefix);
+    return isPng;
+  }, {
+    message: 'Picture must be a PNG image.',
+  })
   .refine(value => {
-    return value instanceof File && value.size > 0;
-  }, 'Picture file must not be empty.')
+    const { error } = z.base64().safeParse(value.replace(prefix, ''));
+    return !error;
+  }, {
+    message: 'Picture must be a valid base64 string.',
+  })
   .refine(value => {
-    return value instanceof File && value.type === 'image/png';
-  }, 'Picture file must be a PNG image.')
-  .transform(async value => {
-    return Buffer.from(await (value as File).arrayBuffer());
+    const buffer = Buffer.from(value.replace(prefix, ''), 'base64');
+    return buffer.length <= 1024 * 1024;
+  }, {
+    message: 'Picture must be a 1MB PNG image max.',
   })
   .openapi({
-    format: 'binary',
+    description: 'A base64 encoded PNG image.',
     type: 'string',
   });

@@ -2,7 +2,7 @@ import { createRoute } from '@hono/zod-openapi';
 
 type Version = 'v1';
 type Client = 'platform';
-type Resource = 'auth' | 'users';
+type Resource = 'auth' | 'users' | 'workspaces';
 type Param = `{${string}}`;
 type Action = string;
 

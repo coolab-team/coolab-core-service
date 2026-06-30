@@ -14,7 +14,11 @@ const handler = app.openapi(RoutingUtil.route({
       content: {
         'application/json': {
           schema: validation().helpers().ensureField(
-            validation().tables().users().updatable(),
+            validation().tables().users().updatable().omit({
+              picture: true,
+            }).extend({
+              picture: validation().picture().nullable().optional(),
+            }),
           ),
         },
       },

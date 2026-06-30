@@ -1,20 +1,19 @@
 import { NotFoundException } from '@self/exceptions';
-import { MemoizationMemory } from '@self/memories';
 import { UsersRepository } from '@self/repositories';
 import { UsersService } from '@self/services';
 
 type Params = {
   id: string;
   name?: string | null;
+  picture?: string | null;
 };
 
 export const updateUsersApplication = async (params: Params) => {
 
-  const { id, ...toUpdate } = params;
+  const { id, picture: receivedPicture, ...rest } = params;
 
-  const user = await UsersRepository.update(toUpdate)
-    .where('id', '=', id)
-    .returningAll()
+  const user = await UsersRepository.selectById(id)
+    .selectAll()
     .executeTakeFirst();
 
   if(!user) {
@@ -28,9 +27,44 @@ export const updateUsersApplication = async (params: Params) => {
     });
   }
 
-  await MemoizationMemory.purge(`memo:user-in-platform-context:${id}`);
+  let picture = user.picture;
 
-  const mapped = await UsersService.ensurePictureUrl(user);
+  if(receivedPicture) {
+    picture = await UsersService.uploadPictureBase64(receivedPicture);
+  }
+
+  if(receivedPicture === null) {
+    picture = null;
+  }
+
+  if(receivedPicture !== undefined && user.picture) {
+    await UsersService.deletePicture(user.picture);
+  }
+
+  const toUpdate = {
+    ...rest,
+    ...(receivedPicture !== undefined ? { picture } : {}),
+  };
+
+  const result = await UsersRepository.update(toUpdate)
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst();
+
+  if(!result) {
+    throw new NotFoundException({
+      feedback: {
+        enUs: 'The user was not found.',
+        esEs: 'El usuario no fue encontrado.',
+        ptBr: 'O usuário não foi encontrado.',
+      },
+      message: 'The user was not found.',
+    });
+  }
+
+  await UsersService.purgeUserMemo(id);
+
+  const mapped = await UsersService.ensurePictureUrl(result);
 
   return mapped;
 };

@@ -17,7 +17,7 @@ const selectable = () => helpers().table().entity().extend({
     .describe('The last time the user authenticated.'),
   name: z.string().min(1).max(120).nullable()
     .describe('The display name of the user.'),
-  picture: z.string().url().nullable()
+  picture: z.string().nullable()
     .describe('The public picture URL for the user.'),
 }) satisfies z.ZodType<Selectable>;
 
@@ -32,7 +32,6 @@ const updatable = () => helpers().table().updatable(selectable())
     email: true,
     emailStatus: true,
     lastAuthenticationAt: true,
-    picture: true,
   })
   .partial();
 

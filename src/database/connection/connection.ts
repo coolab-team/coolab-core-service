@@ -1,5 +1,9 @@
 import { env } from '@self/consts';
-import { UsersTable } from '@self/database/tables';
+import {
+  UsersTable,
+  WorkspacesTable,
+  WorkspaceUsersTable,
+} from '@self/database/tables';
 import { DataUtil, LoggingUtil } from '@self/utils';
 import {
   CamelCasePlugin,
@@ -10,6 +14,8 @@ import { Pool } from 'pg';
 
 export type DataBaseSchema = {
   users: UsersTable.Schema;
+  workspaceUsers: WorkspaceUsersTable.Schema;
+  workspaces: WorkspacesTable.Schema;
 };
 
 const maxConnections = 10;
