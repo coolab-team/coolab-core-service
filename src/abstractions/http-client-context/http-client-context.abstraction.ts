@@ -18,14 +18,20 @@ export abstract class HttpClientContext<TProperties extends object> extends Cont
   protected async setupBaseProperties(c: HonoContext): Promise<BaseProperties> {
     let body: Record<string, unknown> = {};
     let rawBody: string | undefined = undefined;
+    const contentType = c.req.header('content-type');
+    const isJson = contentType
+      ? /^application\/([a-z.-]+\+)?json/.test(contentType)
+      : false;
 
-    try {
-      const parsedBody = await c.req.json();
-      if(parsedBody && typeof parsedBody === 'object' && !Array.isArray(parsedBody)) {
-        body = parsedBody;
+    if(isJson) {
+      try {
+        const parsedBody = await c.req.json();
+        if(parsedBody && typeof parsedBody === 'object' && !Array.isArray(parsedBody)) {
+          body = parsedBody;
+        }
+      } catch {
+        rawBody = await c.req.text().catch(() => undefined);
       }
-    } catch {
-      rawBody = await c.req.text().catch(() => undefined);
     }
 
     const headers = c.req.header();

@@ -2,6 +2,7 @@
 
 ## Rules
 
+- Critical: never write tests.
 - Use `pnpm`, never npm.
 - Keep dependency direction downward: handler -> context/application -> repository -> database.
 - Use `@self/*` imports for cross-layer imports.
