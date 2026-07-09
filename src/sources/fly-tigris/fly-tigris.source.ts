@@ -1,6 +1,7 @@
 import { Readable } from 'node:stream';
 
 import {
+  CopyObjectCommand,
   DeleteObjectCommand,
   GetObjectCommand,
   S3Client,
@@ -10,7 +11,8 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { env } from '@self/consts';
 import { BadRequestException } from '@self/exceptions';
 
-type Folder = 'user-pictures' | 'workspace-pictures';
+type EphemeralFolder = 'uploads';
+type Folder = EphemeralFolder | 'user-pictures' | 'workspace-pictures';
 type Extension = 'png';
 type UUID = string;
 
@@ -22,21 +24,44 @@ class FlyTigrisSource {
   public client: S3Client;
 
   private readonly bucket = env.BUCKET_NAME;
+  private readonly ephemeralBucket = env.EPHEMERAL_BUCKET_NAME;
 
   constructor() {
     this.client = new S3Client();
   }
 
+  private getBucket(path: string) {
+    const isEphemeral = path.startsWith('uploads/');
+    const bucket = isEphemeral ? this.ephemeralBucket : this.bucket;
+
+    return bucket;
+  }
+
+  private getContentType(path: Path) {
+    const extension = path.split('.').pop();
+    const contentTypeByExtension: Record<Extension, string> = {
+      png: 'image/png',
+    };
+
+    if(!extension || !(extension in contentTypeByExtension)) {
+      return 'application/octet-stream';
+    }
+
+    const contentType = contentTypeByExtension[extension as Extension];
+    return contentType;
+  }
+
   public async upload(buffer: Buffer, path: Path) {
     const fileStream = Readable.from(buffer);
+    const bucket = this.getBucket(path);
 
     try {
       const upload = new Upload({
         client: this.client,
         params: {
           Body: fileStream,
-          Bucket: this.bucket,
-          ContentType: 'image/png',
+          Bucket: bucket,
+          ContentType: this.getContentType(path),
           Key: path,
         },
       });
@@ -51,11 +76,32 @@ class FlyTigrisSource {
 
   public async delete(path: string) {
     const command = new DeleteObjectCommand({
-      Bucket: this.bucket,
+      Bucket: this.getBucket(path),
       Key: path,
     });
 
     await this.client.send(command);
+  }
+
+  public async copy(params: {
+    destinationPath: Path;
+    sourcePath: string;
+  }) {
+    const sourceBucket = this.getBucket(params.sourcePath);
+    const destinationBucket = this.getBucket(params.destinationPath);
+    const copySource = `${sourceBucket}/${encodeURIComponent(params.sourcePath)}`;
+    const command = new CopyObjectCommand({
+      Bucket: destinationBucket,
+      ContentType: this.getContentType(params.destinationPath),
+      CopySource: copySource,
+      Key: params.destinationPath,
+      MetadataDirective: 'REPLACE',
+    });
+
+    await this.client.send(command);
+
+    const result = params.destinationPath;
+    return result;
   }
 
   public async getSignedUrl(path: string) {
@@ -71,7 +117,7 @@ class FlyTigrisSource {
     }
 
     const command = new GetObjectCommand({
-      Bucket: this.bucket,
+      Bucket: this.getBucket(path),
       Key: path,
     });
 

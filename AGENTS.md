@@ -15,6 +15,11 @@
 - Call memoization memory directly at the layer that owns the cached workflow; do not add service methods that only proxy memoization calls.
 - Never log bearer tokens or encrypted token content.
 
+## Cross-Project Discovery
+
+- When asked to inspect another local project, search `~/Repositories` first.
+- Prefer an exact directory-name match; if none exists, narrow similarly named candidates before inspecting files.
+
 ## Commands
 
 - `pnpm run lint`
@@ -27,3 +32,14 @@
 - Implementation files use `{operation}.{resource}.{layer}.ts`.
 - Folders expose `index.ts` barrel exports.
 - Migration files use `NNNN.action-subject.up.sql` and `NNNN.action-subject.down.sql`.
+
+## Mandatory Coding Style
+
+- Apply these mandatory conventions to TypeScript changes unless an existing project rule conflicts.
+- Use 2-space indentation, semicolons, single quotes, spaces inside object braces, and trailing commas in multiline structures.
+- Do not add a space after control-flow keywords: `if(...)`, `for(...)`, and `switch(...)`. Use at most one blank line between logical blocks.
+- Sort imports and object keys. Group multi-item imports across lines, and use `@self/*` for cross-layer imports.
+- Break long objects, argument lists, type members, unions, and chained repository calls vertically, with one logical item per line. Put fluent-chain methods on successive indented lines.
+- Format multiline ternaries with aligned condition, `?`, and `:` branches.
+- Prefer early returns and named intermediate variables. Declare explicit types for non-trivial values, deriving them from existing APIs when possible.
+- Preserve meaningful logical grouping with blank lines and avoid broad reformatting outside the code being changed.

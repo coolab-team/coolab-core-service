@@ -29,18 +29,22 @@ export const updateWorkspacesApplication = async (params: Params) => {
   }
 
   let picture = workspace.picture;
+  const nextPicture = receivedPicture
+    ? WorkspacesService.getPicturePath(receivedPicture)
+    : receivedPicture;
+  const hasChangedPicture = nextPicture !== undefined && nextPicture !== workspace.picture;
 
-  if(receivedPicture) {
-    picture = await WorkspacesService.uploadPictureBase64(receivedPicture);
+  if(receivedPicture && hasChangedPicture) {
+    picture = await WorkspacesService.copyPicture(receivedPicture);
   }
 
-  if(receivedPicture === null) {
+  if(receivedPicture === null && hasChangedPicture) {
     picture = null;
   }
 
   const toUpdate = {
     ...rest,
-    ...(receivedPicture !== undefined ? { picture } : {}),
+    ...(hasChangedPicture ? { picture } : {}),
   };
 
   const result = await WorkspacesRepository.update(toUpdate)
@@ -59,7 +63,7 @@ export const updateWorkspacesApplication = async (params: Params) => {
     });
   }
 
-  if(receivedPicture !== undefined && workspace.picture) {
+  if(hasChangedPicture && workspace.picture) {
     await WorkspacesService.deletePicture(workspace.picture);
   }
 

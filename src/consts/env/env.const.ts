@@ -6,6 +6,7 @@ export const env = z.object({
   DATABASE_CONNECTION_STRING: z.url(),
   DATABASE_READ_CONNECTION_STRING_1: z.url().optional().or(z.literal('')),
   DATABASE_READ_CONNECTION_STRING_2: z.url().optional().or(z.literal('')),
+  EPHEMERAL_BUCKET_NAME: z.string(),
   HTTP_PORT: z.string().refine(value => Number.parseInt(value, 10) > 0, {
     message: 'HTTP_PORT must be a positive integer.',
   }),

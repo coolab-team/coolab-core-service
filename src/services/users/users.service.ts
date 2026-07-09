@@ -1,19 +1,20 @@
-import { FlyTigrisSource, FlyTigrisSourcePath } from '@self/sources';
-import { RandomizeUtil } from '@self/utils';
+import crypto from 'node:crypto';
 
-const picturePrefix = 'data:image/png;base64,';
+import { FlyTigrisSource, FlyTigrisSourcePath } from '@self/sources';
 
 class UsersService {
-  public async uploadPicture(buffer: Buffer) {
-    const path: FlyTigrisSourcePath = `user-pictures/${RandomizeUtil.uuid()}.png`;
-    await FlyTigrisSource.upload(buffer, path);
-
+  public getPicturePath(sourcePath: string) {
+    const id = crypto.createHash('sha256').update(sourcePath).digest('hex');
+    const path: FlyTigrisSourcePath = `user-pictures/${id}.png`;
     return path;
   }
 
-  public async uploadPictureBase64(base64: string) {
-    const buffer = Buffer.from(base64.replace(picturePrefix, ''), 'base64');
-    const result = await this.uploadPicture(buffer);
+  public async copyPicture(sourcePath: string) {
+    const path = this.getPicturePath(sourcePath);
+    const result = await FlyTigrisSource.copy({
+      destinationPath: path,
+      sourcePath,
+    });
     return result;
   }
 

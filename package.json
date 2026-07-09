@@ -16,7 +16,7 @@
     "reinstall:frozen": "rm -rf node_modules && pnpm install --frozen-lockfile",
     "reinstall": "rm -rf node_modules pnpm-lock.yaml && pnpm install",
     "start:docker": "docker-compose up --build --force-recreate --remove-orphans",
-    "start:ts:local": "node --watch --env-file=.env --require tsx/cjs src/main.ts",
+    "start:local": "node --watch --env-file=.env --require tsx/cjs src/main.ts",
     "start:ts": "node --require tsx/cjs src/main.ts",
     "test:coverage": "vitest run --coverage",
     "test": "vitest run",

@@ -3,14 +3,15 @@ import { InferFromValidation, SelectableTableSchema } from '@self/types';
 import { z } from 'zod';
 
 import { helpers } from '../../helpers';
+import { picture } from '../../picture';
 
 type Selectable = SelectableTableSchema<WorkspacesTable.Schema>;
 
 const selectable = () => helpers().table().entity().extend({
   name: z.string().min(1).max(120)
     .describe('The workspace name.'),
-  picture: z.string().url().nullable()
-    .describe('The public picture URL for the workspace.'),
+  picture: picture().nullable()
+    .describe('The workspace picture path.'),
 }) satisfies z.ZodType<Selectable>;
 
 const insertable = () => helpers().table().insertable(selectable());

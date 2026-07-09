@@ -13,7 +13,7 @@ export const createWorkspacesApplication = async (params: Params) => {
     let picture: string | null = null;
 
     if(params.picture) {
-      picture = await WorkspacesService.uploadPictureBase64(params.picture);
+      picture = await WorkspacesService.copyPicture(params.picture);
     }
 
     const created = await WorkspacesRepository.insert({

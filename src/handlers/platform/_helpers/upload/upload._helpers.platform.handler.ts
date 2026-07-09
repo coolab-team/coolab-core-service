@@ -1,31 +1,39 @@
 import { app } from '@self/app';
-import { createWorkspacesApplication } from '@self/application';
+import { uploadHelpersApplication } from '@self/application';
 import { PlatformContext } from '@self/contexts';
 import { RoutingUtil } from '@self/utils';
 import { validation } from '@self/validation';
 
 const handler = app.openapi(RoutingUtil.route({
-  description: 'Creates a workspace for the authenticated platform user.',
+  description: 'Uploads a PNG file to ephemeral storage.',
   method: 'post',
   middleware: PlatformContext.middleware(),
-  path: RoutingUtil.path('/platform/v1/workspaces'),
+  path: RoutingUtil.path('/platform/v1/_helpers/upload'),
   request: {
     body: {
       content: {
-        'application/json': {
-          schema: validation().tables().workspaces().insertable(),
+        'multipart/form-data': {
+          schema: validation().object({
+            file: validation().file().max(1024 * 1024).mime('image/png').openapi({
+              format: 'binary',
+              type: 'string',
+            }),
+          }),
         },
       },
     },
   },
   responses: {
-    201: {
+    200: {
       content: {
         'application/json': {
-          schema: validation().tables().workspaces().selectable(),
+          schema: validation().object({
+            path: validation().string(),
+            url: validation().url(),
+          }),
         },
       },
-      description: 'The workspace was created.',
+      description: 'The uploaded file path and signed URL.',
     },
     400: {
       content: {
@@ -52,19 +60,14 @@ const handler = app.openapi(RoutingUtil.route({
       description: 'An unexpected error occurred.',
     },
   },
-  tags: ['Workspaces'],
+  tags: ['Helpers'],
 }), async c => {
-  const user = PlatformContext.getUser();
-  const body = c.req.valid('json');
+  const body = c.req.valid('form');
+  const buffer = Buffer.from(await body.file.arrayBuffer());
 
-  const result = await createWorkspacesApplication({
-    name: body.name,
-    picture: body.picture,
-    userId: user.id,
-  });
-
-  const response = c.json(result, 201);
+  const result = await uploadHelpersApplication({ buffer });
+  const response = c.json(result, 200);
   return response;
 });
 
-export { handler as createWorkspacesPlatformHandler };
+export { handler as uploadHelpersPlatformHandler };

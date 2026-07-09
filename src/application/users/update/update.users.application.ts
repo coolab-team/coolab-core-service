@@ -29,18 +29,23 @@ export const updateUsersApplication = async (params: Params) => {
   }
 
   let picture = user.picture;
+  const nextPicture = receivedPicture
+    ? UsersService.getPicturePath(receivedPicture)
+    : receivedPicture;
 
-  if(receivedPicture) {
-    picture = await UsersService.uploadPictureBase64(receivedPicture);
+  const hasChangedPicture = nextPicture !== undefined && nextPicture !== user.picture;
+
+  if(receivedPicture && hasChangedPicture) {
+    picture = await UsersService.copyPicture(receivedPicture);
   }
 
-  if(receivedPicture === null) {
+  if(receivedPicture === null && hasChangedPicture) {
     picture = null;
   }
 
   const toUpdate = {
     ...rest,
-    ...(receivedPicture !== undefined ? { picture } : {}),
+    ...(hasChangedPicture ? { picture } : {}),
   };
 
   const result = await UsersRepository.update(toUpdate)
@@ -59,7 +64,7 @@ export const updateUsersApplication = async (params: Params) => {
     });
   }
 
-  if(receivedPicture !== undefined && user.picture) {
+  if(hasChangedPicture && user.picture) {
     await UsersService.deletePicture(user.picture);
   }
 
