@@ -62,10 +62,14 @@ const handler = app.openapi(RoutingUtil.route({
   },
   tags: ['Helpers'],
 }), async c => {
+  const user = PlatformContext.getUser();
   const body = c.req.valid('form');
   const buffer = Buffer.from(await body.file.arrayBuffer());
 
-  const result = await uploadHelpersApplication({ buffer });
+  const result = await uploadHelpersApplication({
+    buffer,
+    userId: user.id,
+  });
   const response = c.json(result, 200);
   return response;
 });

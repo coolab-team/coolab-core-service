@@ -5,6 +5,7 @@
 - Critical: never write tests.
 - Use `pnpm`, never npm.
 - Keep dependency direction downward: handler -> context/application -> repository -> database.
+- Application layers can never call application layers.
 - Use `@self/*` imports for cross-layer imports.
 - Use singleton exports for repositories, contexts, encryptions, and utilities.
 - Keep database migrations as raw SQL under `src/database/migrations`.

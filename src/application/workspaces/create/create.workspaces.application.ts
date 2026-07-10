@@ -1,4 +1,6 @@
 import { connection } from '@self/database';
+import { PlatformEncryption } from '@self/encryptions';
+import { ForbiddenException } from '@self/exceptions';
 import { WorkspacesRepository, WorkspaceUsersRepository } from '@self/repositories';
 import { WorkspacesService } from '@self/services';
 
@@ -13,7 +15,20 @@ export const createWorkspacesApplication = async (params: Params) => {
     let picture: string | null = null;
 
     if(params.picture) {
-      picture = await WorkspacesService.copyPicture(params.picture);
+      const decrypted = PlatformEncryption.decryptUploadPath(params.picture);
+
+      if(decrypted.content.userId !== params.userId) {
+        throw new ForbiddenException({
+          feedback: {
+            enUs: 'The upload belongs to another user.',
+            esEs: 'La carga pertenece a otro usuario.',
+            ptBr: 'O upload pertence a outro usuário.',
+          },
+          message: 'Forbidden upload path.',
+        });
+      }
+
+      picture = await WorkspacesService.copyPicture(decrypted.content.path);
     }
 
     const created = await WorkspacesRepository.insert({

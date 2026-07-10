@@ -9,7 +9,6 @@ import { id } from './id';
 import { language } from './language';
 import { pageNumber } from './page-number';
 import { pageSize } from './page-size';
-import { picture } from './picture';
 import { tables } from './tables';
 
 export const validation = () => ({
@@ -23,6 +22,5 @@ export const validation = () => ({
   language,
   pageNumber,
   pageSize,
-  picture,
   tables,
 });

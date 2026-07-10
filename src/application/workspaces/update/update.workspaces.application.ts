@@ -1,4 +1,5 @@
-import { NotFoundException } from '@self/exceptions';
+import { PlatformEncryption } from '@self/encryptions';
+import { ForbiddenException, NotFoundException } from '@self/exceptions';
 import { MemoizationMemory } from '@self/memories';
 import { WorkspacesRepository } from '@self/repositories';
 import { WorkspacesService } from '@self/services';
@@ -29,13 +30,29 @@ export const updateWorkspacesApplication = async (params: Params) => {
   }
 
   let picture = workspace.picture;
-  const nextPicture = receivedPicture
-    ? WorkspacesService.getPicturePath(receivedPicture)
-    : receivedPicture;
+  let nextPicture: string | null | undefined = receivedPicture;
+
+  if(receivedPicture) {
+    const decrypted = PlatformEncryption.decryptUploadPath(receivedPicture);
+
+    if(decrypted.content.userId !== userId) {
+      throw new ForbiddenException({
+        feedback: {
+          enUs: 'The upload belongs to another user.',
+          esEs: 'La carga pertenece a otro usuario.',
+          ptBr: 'O upload pertence a outro usuário.',
+        },
+        message: 'Forbidden upload path.',
+      });
+    }
+
+    nextPicture = decrypted.content.path;
+  }
+
   const hasChangedPicture = nextPicture !== undefined && nextPicture !== workspace.picture;
 
-  if(receivedPicture && hasChangedPicture) {
-    picture = await WorkspacesService.copyPicture(receivedPicture);
+  if(nextPicture && hasChangedPicture) {
+    picture = await WorkspacesService.copyPicture(nextPicture);
   }
 
   if(receivedPicture === null && hasChangedPicture) {

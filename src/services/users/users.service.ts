@@ -1,20 +1,16 @@
-import crypto from 'node:crypto';
-
 import { FlyTigrisSource, FlyTigrisSourcePath } from '@self/sources';
+import { RandomizeUtil } from '@self/utils';
 
 class UsersService {
-  public getPicturePath(sourcePath: string) {
-    const id = crypto.createHash('sha256').update(sourcePath).digest('hex');
-    const path: FlyTigrisSourcePath = `user-pictures/${id}.png`;
-    return path;
-  }
 
   public async copyPicture(sourcePath: string) {
-    const path = this.getPicturePath(sourcePath);
+    const path = this.buildPicturePath();
+
     const result = await FlyTigrisSource.copy({
       destinationPath: path,
       sourcePath,
     });
+
     return result;
   }
 
@@ -32,6 +28,12 @@ class UsersService {
     };
 
     return mapped;
+  }
+
+  private buildPicturePath() {
+    const id = RandomizeUtil.uuid();
+    const path: FlyTigrisSourcePath = `user-pictures/${id}.png`;
+    return path;
   }
 
 }

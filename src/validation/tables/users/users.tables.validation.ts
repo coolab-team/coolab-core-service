@@ -5,7 +5,6 @@ import { z } from 'zod';
 import { datetime } from '../../datetime';
 import { email } from '../../email';
 import { helpers } from '../../helpers';
-import { picture } from '../../picture';
 
 type Selectable = SelectableTableSchema<UsersTable.Schema>;
 
@@ -18,7 +17,7 @@ const selectable = () => helpers().table().entity().extend({
     .describe('The last time the user authenticated.'),
   name: z.string().min(1).max(120).nullable()
     .describe('The display name of the user.'),
-  picture: picture().nullable()
+  picture: z.string().nullable()
     .describe('The user picture path.'),
 }) satisfies z.ZodType<Selectable>;
 

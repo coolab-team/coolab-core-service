@@ -1,4 +1,5 @@
-import { NotFoundException } from '@self/exceptions';
+import { PlatformEncryption } from '@self/encryptions';
+import { ForbiddenException, NotFoundException } from '@self/exceptions';
 import { MemoizationMemory } from '@self/memories';
 import { UsersRepository } from '@self/repositories';
 import { UsersService } from '@self/services';
@@ -29,14 +30,29 @@ export const updateUsersApplication = async (params: Params) => {
   }
 
   let picture = user.picture;
-  const nextPicture = receivedPicture
-    ? UsersService.getPicturePath(receivedPicture)
-    : receivedPicture;
+  let nextPicture: string | null | undefined = receivedPicture;
+
+  if(receivedPicture) {
+    const decrypted = PlatformEncryption.decryptUploadPath(receivedPicture);
+
+    if(decrypted.content.userId !== params.id) {
+      throw new ForbiddenException({
+        feedback: {
+          enUs: 'The upload belongs to another user.',
+          esEs: 'La carga pertenece a otro usuario.',
+          ptBr: 'O upload pertence a outro usuário.',
+        },
+        message: 'Forbidden upload path.',
+      });
+    }
+
+    nextPicture = decrypted.content.path;
+  }
 
   const hasChangedPicture = nextPicture !== undefined && nextPicture !== user.picture;
 
-  if(receivedPicture && hasChangedPicture) {
-    picture = await UsersService.copyPicture(receivedPicture);
+  if(nextPicture && hasChangedPicture) {
+    picture = await UsersService.copyPicture(nextPicture);
   }
 
   if(receivedPicture === null && hasChangedPicture) {

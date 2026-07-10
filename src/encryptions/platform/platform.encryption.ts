@@ -12,6 +12,11 @@ type AuthenticationTokenContent = {
   id: string;
 };
 
+type UploadPathContent = {
+  path: string;
+  userId: string;
+};
+
 class PlatformEncryption extends Encryption {
   private accessTokenSchema = this.validator().object({
     email: this.validator().email(),
@@ -22,6 +27,13 @@ class PlatformEncryption extends Encryption {
     email: this.validator().email(),
     id: this.validator().id(),
   }) satisfies z.ZodType<AuthenticationTokenContent>;
+
+  private uploadPathSchema = this.validator().object({
+    path: this.validator().string().refine(value => value.endsWith('.png'), {
+      message: 'Upload path must be a PNG path.',
+    }),
+    userId: this.validator().id(),
+  }) satisfies z.ZodType<UploadPathContent>;
 
   constructor() {
     super(env.AUTH_ENCRYPTION_PRIVATE_KEY);
@@ -37,6 +49,11 @@ class PlatformEncryption extends Encryption {
     return encrypted;
   }
 
+  public encryptUploadPath(content: UploadPathContent) {
+    const encrypted = this.encrypt(content);
+    return encrypted;
+  }
+
   public decryptAccessToken(content: string) {
     const decrypted = this.decrypt(content);
     const parsed = this.createSchema(this.accessTokenSchema).parse(decrypted);
@@ -46,6 +63,12 @@ class PlatformEncryption extends Encryption {
   public decryptAuthenticationToken(content: string) {
     const decrypted = this.decrypt(content);
     const parsed = this.createSchema(this.authenticationTokenSchema).parse(decrypted);
+    return parsed;
+  }
+
+  public decryptUploadPath(content: string) {
+    const decrypted = this.decrypt(content);
+    const parsed = this.createSchema(this.uploadPathSchema).parse(decrypted);
     return parsed;
   }
 }
