@@ -1,9 +1,9 @@
-FROM node:24.11.0-alpine
+FROM node:24.18.0-alpine
 
 WORKDIR /app
 
 RUN corepack enable
-RUN corepack prepare pnpm@9.14.0 --activate
+RUN corepack prepare pnpm@11.12.0 --activate
 
 COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile

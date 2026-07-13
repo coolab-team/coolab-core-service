@@ -18,7 +18,7 @@
         "HTTP_PORT": "8080"
       },
       "internalConsoleOptions": "neverOpen",
-      "runtimeVersion": "24.11.0",
+      "runtimeVersion": "24.18.0",
       "outputCapture": "std",
     }
   ]

@@ -6,8 +6,8 @@ Backend service foundation for Coolab. The first vertical slice is platform user
 
 | Category | Technology |
 | --- | --- |
-| Runtime | Node.js 24.11.0 |
-| Package manager | pnpm |
+| Runtime | Node.js 24.18.0 |
+| Package manager | pnpm 11.12.0 |
 | Framework | Hono |
 | API docs | Hono OpenAPI + Swagger UI |
 | Language | TypeScript |
