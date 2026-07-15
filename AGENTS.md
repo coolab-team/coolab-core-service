@@ -25,8 +25,7 @@
 
 - `pnpm run lint`
 - `pnpm run ts`
-- `pnpm db:migrate:up`
-- `pnpm db:migrate:down`
+- After completing both `pnpm run ts` and `pnpm run lint`, invoke the `implementation-reviewer` agent to review the uncommitted changes.
 
 ## Naming
 
