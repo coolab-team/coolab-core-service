@@ -10,7 +10,7 @@ Backend service foundation for Coolab. The first vertical slice is platform user
 | Package manager | pnpm 11.12.0 |
 | Framework | Hono |
 | API docs | Hono OpenAPI + Swagger UI |
-| Language | TypeScript |
+| Language | TypeScript 7 (native) |
 | Validation | Zod |
 | Database | PostgreSQL + Kysely |
 | Cache | Redis |
@@ -58,6 +58,8 @@ Docker Compose only builds and starts the application container. It does not def
 | `pnpm db:migrate:down` | Roll back the latest SQL migration |
 | `pnpm db:create` | Create local database |
 | `pnpm db:clear` | Drop local database |
+
+TypeScript 7 provides the native compiler and language server. TypeScript 6 remains installed only as a compatibility dependency for ESLint tooling that uses the TypeScript compiler API.
 
 ## Environment
 

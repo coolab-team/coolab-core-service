@@ -22,7 +22,7 @@
     "start:ts": "node --require tsx/cjs src/main.ts",
     "test:coverage": "vitest run --coverage",
     "test": "vitest run",
-    "ts": "NODE_OPTIONS=\"--max-old-space-size=8192\" pnpm exec tsgo --noEmit --diagnostics"
+    "ts": "pnpm exec tsc --noEmit --diagnostics"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.1035.0",
@@ -52,7 +52,7 @@
     "@types/pg-escape": "0.2.3",
     "@typescript-eslint/eslint-plugin": "8.59.0",
     "@typescript-eslint/parser": "8.59.0",
-    "@typescript/native-preview": "7.0.0-dev.20260415.1",
+    "@typescript/native": "npm:typescript@7.0.2",
     "@vitest/coverage-v8": "4.1.5",
     "eslint": "10.2.1",
     "eslint-plugin-import": "2.32.0",
@@ -62,6 +62,7 @@
     "eslint-plugin-sort-keys-fix": "1.1.2",
     "globals": "17.5.0",
     "tsx": "4.21.0",
+    "typescript": "npm:@typescript/typescript6@6.0.2",
     "vitest": "4.1.5"
   }
 }
