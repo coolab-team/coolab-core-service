@@ -1,7 +1,7 @@
 import { createRoute } from '@hono/zod-openapi';
 
 type Version = 'v1';
-type Client = 'platform';
+type Client = 'pipeline' | 'platform';
 type Resource =
 | '_helpers'
 | 'socket'

@@ -18,14 +18,16 @@
 
 ## Cross-Project Discovery
 
+- Never update another project unless the user directly asks for it.
 - When asked to inspect another local project, search `~/Repositories` first.
 - Prefer an exact directory-name match; if none exists, narrow similarly named candidates before inspecting files.
 
-## Commands
+### After Implementation Checks
+Execute the steps below after every implementation.
 
-- `pnpm run lint`
-- `pnpm run ts`
-- After completing both `pnpm run ts` and `pnpm run lint`, invoke the `implementation-reviewer` agent to review the uncommitted changes.
+- Run `pnpm lint:fix`, fix the remaining issues manually if necessary and repeat until all errors are gone.
+- Run `pnpm ts`, fix the issues and repeat until all errors are gone.
+- Invoke the Rules Reviewer agent and act on the feedback. Ask questions if necessary.
 
 ## Naming
 

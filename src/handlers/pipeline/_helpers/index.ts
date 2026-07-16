@@ -1,2 +1,1 @@
 export * from './notify-new-platform-version';
-export * from './upload';

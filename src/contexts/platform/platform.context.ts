@@ -67,9 +67,13 @@ class PlatformContext extends HttpClientContext<Properties> {
     return workspace;
   }
 
-  public middleware(): MiddlewareHandler {
+  public middleware(input: { allowQueryAuthorization?: boolean; } = {}): MiddlewareHandler {
     return async (c, next) => {
-      const authorization = c.req.header('authorization');
+      const isWebSocket = c.req.header('upgrade')?.toLowerCase() === 'websocket';
+      const authorization = c.req.header('authorization')
+        ?? (input.allowQueryAuthorization && isWebSocket
+          ? c.req.query('authorization')
+          : undefined);
 
       if(!authorization) {
         throw new UnauthorizedException({

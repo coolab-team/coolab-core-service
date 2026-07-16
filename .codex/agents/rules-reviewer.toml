@@ -1,4 +1,4 @@
-name = "implementation-reviewer"
+name = "rules-reviewer"
 description = "Reviews uncommitted changes only against the repository root AGENTS.md, presents an evidence-based correction plan, and waits for approval before editing."
 model = "gpt-5.6-sol"
 model_reasoning_effort = "high"

@@ -1,6 +1,7 @@
 import { upgradeWebSocket } from '@hono/node-server';
 import { app } from '@self/app';
 import { PlatformContext } from '@self/contexts';
+import { PlatformSocketEvents } from '@self/events';
 import { ActiveSocketConnectionsMemory } from '@self/memories';
 import {
   LoggingUtil,
@@ -19,7 +20,9 @@ const pongPayloadSchema = validation().object({
 const handler = app.get(
   path,
   SocketUtil.validationMiddleware,
-  PlatformContext.middleware(),
+  PlatformContext.middleware({
+    allowQueryAuthorization: true,
+  }),
   upgradeWebSocket(() => {
     const user = PlatformContext.getUser();
     let hasClosed = false;
@@ -27,6 +30,7 @@ const handler = app.get(
     let memoryOperation: Promise<void> = Promise.resolve();
     let hasPendingRefresh = false;
     let pingPongInterval: NodeJS.Timeout | null = null;
+    let unsubscribeFromNewVersionAvailable: (() => void) | null = null;
 
     const queueMemoryOperation = (operation: () => Promise<void>) => {
       memoryOperation = memoryOperation
@@ -78,6 +82,9 @@ const handler = app.get(
         pingPongInterval = null;
       }
 
+      unsubscribeFromNewVersionAvailable?.();
+      unsubscribeFromNewVersionAvailable = null;
+
       queueMemoryOperation(async () => {
         const { count } = await ActiveSocketConnectionsMemory.subtract({
           userId: user.id,
@@ -104,7 +111,28 @@ const handler = app.get(
         lastPongAt = Date.now();
         refreshConnection();
       }),
-      onOpen: (_, ws) => {
+      onOpen: async (_, ws) => {
+        try {
+          const unsubscribe = await PlatformSocketEvents.subscribe('newVersionAvailable', event => {
+            if(hasClosed) return;
+
+            ws.send(JSON.stringify({
+              id: event.id,
+              name: event.name,
+              payload: event.payload,
+            }));
+          });
+
+          if(hasClosed) {
+            unsubscribe();
+            return;
+          }
+
+          unsubscribeFromNewVersionAvailable = unsubscribe;
+        } catch {
+          LoggingUtil.error('Failed to subscribe to platform socket events.');
+        }
+
         registerConnection();
 
         pingPongInterval = setInterval(() => {

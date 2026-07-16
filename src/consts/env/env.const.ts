@@ -16,6 +16,7 @@ export const env = z.object({
     'development',
     'production',
   ]),
+  PIPELINE_API_KEY: z.string(),
   PLATFORM_URL: z.url(),
   REDIS_DATABASE: z.string().refine(value => Number.parseInt(value, 10) >= 0, {
     message: 'REDIS_DATABASE must be zero or a positive integer.',
