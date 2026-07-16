@@ -24,4 +24,6 @@ Phase 3:
 2. If the user approves, apply the fixes.
 3. If the user doesn't approve, ask for the user's feedback.
 4. Repeat the process until the user approves.
+
+No need to look for bugs. If you find any, report. If not, leave it be. Your focus is to review implementation x AGENTS.md conformity.
 """
