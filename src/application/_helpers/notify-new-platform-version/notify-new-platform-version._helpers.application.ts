@@ -12,7 +12,7 @@ export const notifyNewPlatformVersionHelpersApplication = async (): Promise<Resu
 
   await PlatformSocketEvents.emit({
     id,
-    name: 'newVersionAvailable',
+    name: 'new-version-available',
     payload: {
       timestamp,
     },

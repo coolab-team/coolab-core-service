@@ -22,13 +22,6 @@
 - When asked to inspect another local project, search `~/Repositories` first.
 - Prefer an exact directory-name match; if none exists, narrow similarly named candidates before inspecting files.
 
-### After Implementation Checks
-Execute the steps below after every implementation.
-
-- Run `pnpm lint:fix`, fix the remaining issues manually if necessary and repeat until all errors are gone.
-- Run `pnpm ts`, fix the issues and repeat until all errors are gone.
-- Invoke the Rules Reviewer agent and act on the feedback. Ask questions if necessary.
-
 ## Naming
 
 - Implementation files use `{operation}.{resource}.{layer}.ts`.
@@ -45,3 +38,11 @@ Execute the steps below after every implementation.
 - Format multiline ternaries with aligned condition, `?`, and `:` branches.
 - Prefer early returns and named intermediate variables. Declare explicit types for non-trivial values, deriving them from existing APIs when possible.
 - Preserve meaningful logical grouping with blank lines and avoid broad reformatting outside the code being changed.
+
+### After Implementation Checks
+Execute the steps below after every implementation.
+
+- Run `pnpm lint:fix`, fix the remaining issues manually if necessary and repeat until all errors are gone.
+- Run `pnpm ts`, fix the issues and repeat until all errors are gone.
+- Invoke the Rules Reviewer agent and act on the feedback. Ask questions if necessary.
+- Invoke the Bug Finder agent and action on the feedback. Ask questions if necessary.

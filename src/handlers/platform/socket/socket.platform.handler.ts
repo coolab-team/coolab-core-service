@@ -113,7 +113,7 @@ const handler = app.get(
       }),
       onOpen: async (_, ws) => {
         try {
-          const unsubscribe = await PlatformSocketEvents.subscribe('newVersionAvailable', event => {
+          const unsubscribe = await PlatformSocketEvents.subscribe('new-version-available', event => {
             if(hasClosed) return;
 
             ws.send(JSON.stringify({

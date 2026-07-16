@@ -4,7 +4,7 @@ import { createClient } from 'redis';
 import { z } from 'zod';
 
 type EventPayloads = {
-  newVersionAvailable: {
+  'new-version-available': {
     timestamp: number;
   };
 };
@@ -20,7 +20,7 @@ type RedisClient = ReturnType<typeof createClient>;
 
 const eventSchema = z.object({
   id: z.uuid(),
-  name: z.literal('newVersionAvailable'),
+  name: z.literal('new-version-available'),
   payload: z.object({
     timestamp: z.number(),
   }),
@@ -28,7 +28,7 @@ const eventSchema = z.object({
 
 class PlatformSocketEvents {
   private readonly channel = 'coolab:events:platform-socket';
-  private readonly handlers = new Set<EventHandler<'newVersionAvailable'>>();
+  private readonly handlers = new Set<EventHandler<'new-version-available'>>();
   private readonly publisher: RedisClient;
   private readonly subscriber: RedisClient;
   private publisherConnection: Promise<void> | null = null;
@@ -53,13 +53,13 @@ class PlatformSocketEvents {
   ) {
     await this.ensureSubscriberConnection();
 
-    if(name === 'newVersionAvailable') {
-      this.handlers.add(handler as EventHandler<'newVersionAvailable'>);
+    if(name === 'new-version-available') {
+      this.handlers.add(handler as EventHandler<'new-version-available'>);
     }
 
     const unsubscribe = () => {
-      if(name === 'newVersionAvailable') {
-        this.handlers.delete(handler as EventHandler<'newVersionAvailable'>);
+      if(name === 'new-version-available') {
+        this.handlers.delete(handler as EventHandler<'new-version-available'>);
       }
     };
     return unsubscribe;
