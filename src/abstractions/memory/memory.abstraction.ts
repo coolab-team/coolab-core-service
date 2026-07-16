@@ -11,6 +11,7 @@ type WorkspaceId = string;
 
 export type MemoryKey =
   | 'memo:*' // To allow purge all.
+  | `memo:active-socket-connections:platform:${UserId}`
   | `memo:user-in-platform-context:${UserId}`
   | `memo:user-workspace-in-platform-context:${UserId}:${WorkspaceId}`;
 

@@ -4,6 +4,7 @@ type Version = 'v1';
 type Client = 'platform';
 type Resource =
 | '_helpers'
+| 'socket'
 | 'users'
 | 'workspaces';
 type Param = `{${string}}`;

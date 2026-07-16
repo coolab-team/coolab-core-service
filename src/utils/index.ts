@@ -4,3 +4,4 @@ export * from './logging';
 export * from './promise';
 export * from './randomize';
 export * from './routing';
+export * from './socket';

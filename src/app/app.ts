@@ -16,6 +16,8 @@ type ExceptionWithTraceId = z.infer<ReturnType<ReturnType<typeof validation>['ex
   traceId: string;
 };
 
+const corsMiddleware = cors();
+
 const handler = new OpenAPIHono({
   defaultHook: (result, c) => {
     if(result.success) return;
@@ -79,7 +81,17 @@ handler.onError((error, c) => {
 
 handler.use(contextStorage());
 handler.use(LoggingContext.middleware());
-handler.use('*', cors());
+handler.use('*', async (c, next) => {
+  const isWebSocket = c.req.header('upgrade')?.toLowerCase() === 'websocket';
+
+  if(isWebSocket) {
+    await next();
+    return;
+  }
+
+  const response = await corsMiddleware(c, next);
+  return response;
+});
 handler.use('*', bodyLimit({
   maxSize: fileLimits.maxRequestBodySize,
   onError: c => {
@@ -103,7 +115,12 @@ handler.use('*', bodyLimit({
 handler.use(LoggingContext.logger());
 
 handler.use('*', async (c, next) => {
+  const isWebSocket = c.req.header('upgrade')?.toLowerCase() === 'websocket';
+
   await next();
+
+  if(isWebSocket) return;
+
   c.header('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
   c.header('Expires', '0');
   c.header('Pragma', 'no-cache');
