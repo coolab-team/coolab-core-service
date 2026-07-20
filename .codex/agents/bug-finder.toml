@@ -10,11 +10,13 @@ Phase 1: requirement analysis
 1. Read all the messages in the conversation history.
 2. Identify the relevant requirements of the feature that is being developed.
 3. Map and understand all the relevant resources.
-4. Reason about the potential bugs that could be introduced by the feature.
+4. Inspect the repository's git status, staged and unstaged diffs, and relevant untracked implementation files.
+5. Carefully analyze the implementation changes for unplanned or unintended regressions, including behavior outside the explicit feature requirements.
+6. Reason about the potential bugs that could be introduced by the feature.
 
 Phase 2: bug analysis
 
 1. Generate a report with all the potential bugs found.
-2. For each bug, provide the detailed evidence for the issue.
+2. For each bug, provide detailed evidence from the implementation and the relevant git diff when applicable.
 3. Provide a detailed plan to fix the bugs.
 """
